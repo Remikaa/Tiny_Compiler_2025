@@ -110,7 +110,8 @@ namespace TINY_Compiler
                 {
                     j++;
                     bool haveDot = false;
-                   while( j < SourceCode.Length && ( SourceCode[j] >= '0' && SourceCode[j] <= '9' || SourceCode[j] == '.') )
+                    bool doubleDots = false;
+                    while ( j < SourceCode.Length && (char.IsLetterOrDigit(SourceCode[j]) || SourceCode[j] == '.') )
                     {
                         if (SourceCode[j] == '.' && haveDot == false)
                         {
@@ -118,13 +119,15 @@ namespace TINY_Compiler
                         }
                         else if (SourceCode[j] == '.' && haveDot == true) //handle if two dots appear in the same number
                         {
-                            throw new Exception("smth is wrong with the number");
+                            doubleDots = true;
                         }
                         CurrentLexeme += SourceCode[j];
                         j++;
                     }
-
-                    FindTokenClass(CurrentLexeme);
+                    if (doubleDots)
+                            Errors.Error_List.Add(CurrentLexeme);
+                    else
+                        FindTokenClass(CurrentLexeme);
                     i = j - 1;
                     continue;
                 }
