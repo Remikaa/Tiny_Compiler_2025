@@ -24,12 +24,12 @@ public enum Token_Class
 }
 namespace TINY_Compiler
 {
-    
+
 
     public class Token
     {
-       public string lex;
-       public Token_Class token_type;
+        public string lex;
+        public Token_Class token_type;
     }
 
     public class Scanner
@@ -77,9 +77,9 @@ namespace TINY_Compiler
 
         }
 
-    public void StartScanning(string SourceCode)
+        public void StartScanning(string SourceCode)
         {
-            for(int i=0; i<SourceCode.Length;i++)
+            for (int i = 0; i < SourceCode.Length; i++)
             {
                 int j = i;
                 char CurrentChar = SourceCode[i];
@@ -90,28 +90,30 @@ namespace TINY_Compiler
 
                 // --------------------------------------------- CHARACTER -------------------------------------------------
 
-                if ( (CurrentChar >= 'A' && CurrentChar <= 'Z') || (CurrentChar >= 'a' && CurrentChar <= 'z') ) 
+                if ((CurrentChar >= 'A' && CurrentChar <= 'Z') || (CurrentChar >= 'a' && CurrentChar <= 'z'))
                 {
-                   j++;
-                   while(j < SourceCode.Length && ( char.IsLetterOrDigit(SourceCode[j]) ) )
+                    j++;
+                    while (j < SourceCode.Length && (!((SourceCode[j] == ':' && j + 1 < SourceCode.Length && SourceCode[j + 1] == '=') || (Operators.ContainsKey(SourceCode[j].ToString()))
+                         || (Syntax.ContainsKey(SourceCode[j].ToString())))
+                         && !(char.IsWhiteSpace(SourceCode[j]))))
                     {
                         CurrentLexeme += SourceCode[j];
                         j++;
                     }
 
-                   FindTokenClass(CurrentLexeme);
-                   i = j - 1; //since the for loop increments one after the incremention we would be at i = j
+                    FindTokenClass(CurrentLexeme);
+                    i = j - 1; //since the for loop increments one after the incremention we would be at i = j
                     continue;
                 }
 
                 // --------------------------------------------- NUMBER --------------------------------------------------
 
-                else if( CurrentChar >= '0' && CurrentChar <= '9' ) 
+                else if (CurrentChar >= '0' && CurrentChar <= '9')
                 {
                     j++;
                     bool haveDot = false;
                     bool doubleDots = false;
-                    while ( j < SourceCode.Length && (char.IsLetterOrDigit(SourceCode[j]) || SourceCode[j] == '.') )
+                    while (j < SourceCode.Length && (char.IsLetterOrDigit(SourceCode[j]) || SourceCode[j] == '.'))
                     {
                         if (SourceCode[j] == '.' && haveDot == false)
                         {
@@ -125,7 +127,7 @@ namespace TINY_Compiler
                         j++;
                     }
                     if (doubleDots)
-                            Errors.Error_List.Add(CurrentLexeme);
+                        Errors.Error_List.Add(CurrentLexeme);
                     else
                         FindTokenClass(CurrentLexeme);
                     i = j - 1;
@@ -134,10 +136,10 @@ namespace TINY_Compiler
 
                 // --------------------------------------------- COMMENT --------------------------------------------------
 
-                else if ( CurrentChar == '/' && SourceCode[i+1] == '*')
+                else if (CurrentChar == '/' && SourceCode[i + 1] == '*')
                 {
                     j += 2;
-                    while( j < SourceCode.Length && ! (SourceCode[j] == '*' && j+1 < SourceCode.Length && SourceCode[j+1] == '/') )
+                    while (j < SourceCode.Length && !(SourceCode[j] == '*' && j + 1 < SourceCode.Length && SourceCode[j + 1] == '/'))
                     {
                         j++;
                     }
@@ -147,7 +149,7 @@ namespace TINY_Compiler
 
                 // --------------------------------------------- Two Character Operator ------------------------------------
 
-                else if( i+1 < SourceCode.Length && (Operators.ContainsKey(CurrentChar.ToString() + SourceCode[i + 1] ) ) )
+                else if (i + 1 < SourceCode.Length && (Operators.ContainsKey(CurrentChar.ToString() + SourceCode[i + 1])))
                 {
                     string s = CurrentChar.ToString() + SourceCode[i + 1];
                     FindTokenClass(s);
@@ -157,7 +159,7 @@ namespace TINY_Compiler
 
                 // --------------------------------------------- One Character Operator ------------------------------------
 
-                else if (Operators.ContainsKey(CurrentChar.ToString() ) )
+                else if (Operators.ContainsKey(CurrentChar.ToString()))
                 {
                     FindTokenClass(CurrentChar.ToString());
                     continue;
@@ -167,12 +169,12 @@ namespace TINY_Compiler
 
                 else if (CurrentChar == '"')
                 {
-                    if (j+1 <= SourceCode.Length)
+                    if (j + 1 <= SourceCode.Length)
                         j++;
                     string s = "\"";
                     bool closed = false;
 
-                    while(j < SourceCode.Length)
+                    while (j < SourceCode.Length)
                     {
                         s += SourceCode[j];
                         if (SourceCode[j] == '"')
@@ -183,7 +185,7 @@ namespace TINY_Compiler
                         }
                         j++;
                     }
-                  
+
                     if (!closed)
                     {
                         Errors.Error_List.Add(s);
@@ -198,10 +200,17 @@ namespace TINY_Compiler
                 // not any with other case
                 else
                 {
-                    FindTokenClass(CurrentChar.ToString()); 
+                    while (j + 1 < SourceCode.Length && !(char.IsWhiteSpace(SourceCode[j]))  //remove 1 bracket here if you uncomment the next line
+                        && !((Operators.ContainsKey(SourceCode[j].ToString())) || (Syntax.ContainsKey(SourceCode[j].ToString()))))
+                    {
+                        CurrentLexeme += SourceCode[j + 1];
+                        j++;
+                    }
+                    i = j;
+                    FindTokenClass(CurrentLexeme.ToString());
                 }
             }
-            
+
             Compiler.TokenStream = Tokens;
         }
         void FindTokenClass(string Lex)
@@ -212,19 +221,19 @@ namespace TINY_Compiler
 
 
             //Is it a reserved word?
-            if ( ReservedWords.ContainsKey(Lex) )
+            if (ReservedWords.ContainsKey(Lex))
             {
                 Tok.token_type = ReservedWords[Lex];
                 Tokens.Add(Tok);
             }
             //Is it an identifier?
-            else if ( isIdentifier(Lex) )
+            else if (isIdentifier(Lex))
             {
                 Tok.token_type = Token_Class.T_Identifier;
                 Tokens.Add(Tok);
             }
             //Is it a Constant?
-            else if ( isConstant(Lex) )
+            else if (isConstant(Lex))
             {
                 Tok.token_type = Token_Class.T_Number;
                 Tokens.Add(Tok);
@@ -258,19 +267,20 @@ namespace TINY_Compiler
                 Errors.Error_List.Add(Lex);
             }
 
-            
+
         }
 
-    
+
 
         bool isIdentifier(string lex)
         {
-            bool isValid = System.Text.RegularExpressions.Regex.IsMatch(lex,@"^[a-zA-Z][a-zA-Z0-9]*$");
+            bool isValid = System.Text.RegularExpressions.Regex.IsMatch(lex, @"^[a-zA-Z][a-zA-Z0-9]*$");
+
             return isValid;
         }
         bool isConstant(string lex)
         {
-            bool isValid = System.Text.RegularExpressions.Regex.IsMatch(lex, @"^[0-9]+(\.[0-9]+)?$"); 
+            bool isValid = System.Text.RegularExpressions.Regex.IsMatch(lex, @"^[0-9]+(\.[0-9]+)?$");
             return isValid;
         }
         bool isString(string lex)
