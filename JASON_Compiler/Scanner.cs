@@ -88,12 +88,12 @@ namespace TINY_Compiler
                 if (CurrentChar == ' ' || CurrentChar == '\r' || CurrentChar == '\n')
                     continue;
 
-                // --------------------------------------------- CHARACTER --------------------------------------------------
+                // --------------------------------------------- CHARACTER -------------------------------------------------
 
-                if ( (CurrentChar >= 'A' && CurrentChar <= 'Z') || (CurrentChar >= 'a' && CurrentChar <= 'z')) 
+                if ( (CurrentChar >= 'A' && CurrentChar <= 'Z') || (CurrentChar >= 'a' && CurrentChar <= 'z') ) 
                 {
                    j++;
-                   while(j < SourceCode.Length && (char.IsLetterOrDigit(SourceCode[j]) ) )
+                   while(j < SourceCode.Length && ( char.IsLetterOrDigit(SourceCode[j]) ) )
                     {
                         CurrentLexeme += SourceCode[j];
                         j++;
@@ -167,25 +167,35 @@ namespace TINY_Compiler
 
                 else if (CurrentChar == '"')
                 {
-                    if (j+1 < SourceCode.Length)
+                    if (j+1 <= SourceCode.Length)
                         j++;
-                    string s = SourceCode[j].ToString();
-                    while(j < SourceCode.Length && SourceCode[j]!= '"')
+                    string s = "\"";
+                    bool closed = false;
+
+                    while(j < SourceCode.Length)
                     {
+                        s += SourceCode[j];
+                        if (SourceCode[j] == '"')
+                        {
+                            closed = true;
+                            j++;
+                            break;
+                        }
                         j++;
-                        s += SourceCode[j].ToString();
+                    }
+                  
+                    if (!closed)
+                    {
+                        Errors.Error_List.Add(s);
+                        i = j - 1;
+                        continue;
                     }
 
-                    if (j >= SourceCode.Length)
-                    {
-                        throw new Exception("Unclosed String");
-                    }
-
-                    FindTokenClass("\"" + s);
-                    i = j;
+                    FindTokenClass(s);
+                    i = j - 1;
                     continue;
                 }
-
+                // not any with other case
                 else
                 {
                     FindTokenClass(CurrentChar.ToString()); 
