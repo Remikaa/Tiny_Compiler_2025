@@ -4,14 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-
+//TODO: FIX the small error after handling all #xd as an error. it takes the next character with it.
 public enum Token_Class
 {
     T_Int, T_Float, T_String, T_Read, T_Write, T_Repeat, T_Until, T_If, T_Elseif, T_Else, T_Then, T_Return, T_Endl, T_End, // Reserved Keyword , Assigned By Dictionary
     T_Plus, T_Minus, T_Multiply, T_Divide, T_Assignment, // Arithmatic Operators , Assigned By Dictionary
     T_LessThan, T_GreaterThan, T_IsEqual, T_NotEqual, // Conditional Operators , Assigned By Dictionary
     T_And, T_Or, // Boolean Operators , Assigned By Dictionary
-    T_Number, T_Identifier, // Basic Terms , Assigned By functions
+    T_Number, T_Identifier, T_main, // Basic Terms , Assigned By functions
     T_Comma, T_SemiColon, T_LeftParenthesis, T_RightParenthesis, T_LeftBrackets, T_RightBrackets, // Syntax , Assigned By Dictionary
 
     //FunctionCall,
@@ -55,6 +55,7 @@ namespace TINY_Compiler
             ReservedWords.Add("return", Token_Class.T_Return);
             ReservedWords.Add("endl", Token_Class.T_Endl);
             ReservedWords.Add("end", Token_Class.T_End);
+            ReservedWords.Add("main", Token_Class.T_main);
 
             Operators.Add("+", Token_Class.T_Plus);
             Operators.Add("-", Token_Class.T_Minus);
@@ -85,7 +86,7 @@ namespace TINY_Compiler
                 char CurrentChar = SourceCode[i];
                 string CurrentLexeme = CurrentChar.ToString();
 
-                if (CurrentChar == ' ' || CurrentChar == '\r' || CurrentChar == '\n')
+                if (char.IsWhiteSpace(CurrentChar))
                     continue;
 
                 // --------------------------------------------- CHARACTER -------------------------------------------------
@@ -93,9 +94,11 @@ namespace TINY_Compiler
                 if ((CurrentChar >= 'A' && CurrentChar <= 'Z') || (CurrentChar >= 'a' && CurrentChar <= 'z'))
                 {
                     j++;
-                    while (j < SourceCode.Length && (!((SourceCode[j] == ':' && j + 1 < SourceCode.Length && SourceCode[j + 1] == '=') || (Operators.ContainsKey(SourceCode[j].ToString()))
-                         || (Syntax.ContainsKey(SourceCode[j].ToString())))
-                         && !(char.IsWhiteSpace(SourceCode[j]))))
+                    while (j < SourceCode.Length
+                       && !char.IsWhiteSpace(SourceCode[j])
+                       && !(SourceCode[j] == ':' && j + 1 < SourceCode.Length && SourceCode[j + 1] == '=')
+                       && !Operators.ContainsKey(SourceCode[j].ToString())
+                       && !Syntax.ContainsKey(SourceCode[j].ToString()))
                     {
                         CurrentLexeme += SourceCode[j];
                         j++;
@@ -165,6 +168,12 @@ namespace TINY_Compiler
                     continue;
                 }
 
+                else if (Syntax.ContainsKey(CurrentChar.ToString()))
+                {
+                    FindTokenClass(CurrentChar.ToString());
+                    continue;
+                }
+
                 // --------------------------------------------- String ----------------------------------------------------
 
                 else if (CurrentChar == '"')
@@ -200,13 +209,18 @@ namespace TINY_Compiler
                 // not any with other case
                 else
                 {
-                    while (j + 1 < SourceCode.Length && !(char.IsWhiteSpace(SourceCode[j]))  //remove 1 bracket here if you uncomment the next line
-                        && !((Operators.ContainsKey(SourceCode[j].ToString())) || (Syntax.ContainsKey(SourceCode[j].ToString()))))
+                    CurrentLexeme = CurrentChar.ToString();
+                        j++;
+
+                    while (j < SourceCode.Length 
+                        && !(char.IsWhiteSpace(SourceCode[j]))
+                        && !(Operators.ContainsKey(SourceCode[j].ToString())) 
+                        && !(Syntax.ContainsKey(SourceCode[j].ToString() ) ) ) 
                     {
-                        CurrentLexeme += SourceCode[j + 1];
+                        CurrentLexeme += SourceCode[j];
                         j++;
                     }
-                    i = j;
+                    i = j - 1;
                     FindTokenClass(CurrentLexeme.ToString());
                 }
             }
@@ -285,7 +299,7 @@ namespace TINY_Compiler
         }
         bool isString(string lex)
         {
-            bool isValid = System.Text.RegularExpressions.Regex.IsMatch(lex, @"^"".*""$");
+            bool isValid = System.Text.RegularExpressions.Regex.IsMatch(lex, @"^(?s)""(.|\n)*""$");
             return isValid;
         }
     }
