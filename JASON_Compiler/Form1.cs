@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace TINY_Compiler
 {
@@ -24,8 +25,8 @@ namespace TINY_Compiler
             string Code = textBox1.Text;
             Compiler.Start_Compiling(Code);
             PrintTokens();
-         //   PrintLexemes();
-
+            //PrintLexemes();
+            treeView1.Nodes.Add(Parser.PrintParseTree(Compiler.treeroot));
             PrintErrors();
         }
         void PrintTokens()
@@ -72,5 +73,9 @@ textBox2.Text += JASON_Compiler.Lexemes.ElementAt(i);
 textBox2.Text += Environment.NewLine;
 }
 }*/
+        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+
+        }
     }
 }

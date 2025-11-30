@@ -9,3 +9,13 @@ D:\VS Community\Compiler Theory '25\[2025-2026] JASON_Compiler_Template\JASON_Co
 D:\VS Community\Compiler Theory '25\[2025-2026] JASON_Compiler_Template\JASON_Compiler\bin\Debug\JASON_Compiler.exe.config
 D:\VS Community\Compiler Theory '25\[2025-2026] JASON_Compiler_Template\JASON_Compiler\bin\Debug\JASON_Compiler.exe
 D:\VS Community\Compiler Theory '25\[2025-2026] JASON_Compiler_Template\JASON_Compiler\bin\Debug\JASON_Compiler.pdb
+D:\Programming\Compiler Theory\Tiny_Compiler_2025\JASON_Compiler\bin\Debug\JASON_Compiler.exe.config
+D:\Programming\Compiler Theory\Tiny_Compiler_2025\JASON_Compiler\bin\Debug\JASON_Compiler.exe
+D:\Programming\Compiler Theory\Tiny_Compiler_2025\JASON_Compiler\bin\Debug\JASON_Compiler.pdb
+D:\Programming\Compiler Theory\Tiny_Compiler_2025\JASON_Compiler\obj\Debug\Compiler.csproj.AssemblyReference.cache
+D:\Programming\Compiler Theory\Tiny_Compiler_2025\JASON_Compiler\obj\Debug\TINY_Compiler.Form1.resources
+D:\Programming\Compiler Theory\Tiny_Compiler_2025\JASON_Compiler\obj\Debug\JASON_Compiler.Properties.Resources.resources
+D:\Programming\Compiler Theory\Tiny_Compiler_2025\JASON_Compiler\obj\Debug\Compiler.csproj.GenerateResource.cache
+D:\Programming\Compiler Theory\Tiny_Compiler_2025\JASON_Compiler\obj\Debug\Compiler.csproj.CoreCompileInputs.cache
+D:\Programming\Compiler Theory\Tiny_Compiler_2025\JASON_Compiler\obj\Debug\JASON_Compiler.exe
+D:\Programming\Compiler Theory\Tiny_Compiler_2025\JASON_Compiler\obj\Debug\JASON_Compiler.pdb
